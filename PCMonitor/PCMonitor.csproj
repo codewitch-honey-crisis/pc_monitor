@@ -1,0 +1,147 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{B0137597-3948-4D27-B060-61113BC4212C}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <RootNamespace>PCMonitor</RootNamespace>
+    <AssemblyName>PCMonitor</AssemblyName>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <Deterministic>true</Deterministic>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Management" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Deployment" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="HsvColor.cs" />
+    <Compile Include="Config.cs" />
+    <Compile Include="EditLabel.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="EditLabel.Designer.cs">
+      <DependentUpon>EditLabel.cs</DependentUpon>
+    </Compile>
+    <Compile Include="IconContainer.cs" />
+    <Compile Include="JsonElement.cs" />
+    <Compile Include="JsonException.cs" />
+    <Compile Include="JsonParser.cs" />
+    <Compile Include="JsonRunners.cs" />
+    <Compile Include="JsonUtility.cs" />
+    <Compile Include="JsonWriter.cs" />
+    <Compile Include="Main.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Main.Designer.cs">
+      <DependentUpon>Main.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Interface.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="EditLabel.resx">
+      <DependentUpon>EditLabel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Main.resx">
+      <DependentUpon>Main.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <None Include="app.manifest" />
+    <None Include="json.rl" />
+    <Content Include="pcmonitor.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Icons\gpuati.png" />
+    <EmbeddedResource Include="Icons\barback.png" />
+    <EmbeddedResource Include="Icons\barblue.png" />
+    <EmbeddedResource Include="Icons\bigng.png" />
+    <EmbeddedResource Include="Icons\chip.png" />
+    <EmbeddedResource Include="Icons\clock.png" />
+    <EmbeddedResource Include="Icons\computer.png" />
+    <EmbeddedResource Include="Icons\control.png" />
+    <EmbeddedResource Include="Icons\cpu.png" />
+    <EmbeddedResource Include="Icons\smalldata.png" />
+    <EmbeddedResource Include="Icons\factor.png" />
+    <EmbeddedResource Include="Icons\fan.png" />
+    <EmbeddedResource Include="Icons\flow.png" />
+    <EmbeddedResource Include="Icons\gadget.png" />
+    <EmbeddedResource Include="Icons\hdd.png" />
+    <EmbeddedResource Include="Icons\level.png" />
+    <EmbeddedResource Include="Icons\load.png" />
+    <EmbeddedResource Include="Icons\mainboard.png" />
+    <EmbeddedResource Include="Icons\gpunvidia.png" />
+    <EmbeddedResource Include="Icons\power.png" />
+    <EmbeddedResource Include="Icons\ram.png" />
+    <EmbeddedResource Include="Icons\temperature.png" />
+    <EmbeddedResource Include="Icons\throughput.png" />
+    <EmbeddedResource Include="Icons\voltage.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\openhardwaremonitor\OpenHardwareMonitorLib.csproj">
+      <Project>{b0397530-545a-471d-bb74-027ae456df1a}</Project>
+      <Name>OpenHardwareMonitorLib</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PreBuildEvent>"$(SolutionDir)lexgen.exe" "$(ProjectDir)json.rl" /class JsonTextReaderRunner /namespace PCMonitor /textreader /output "$(ProjectDir)JsonRunners.cs"</PreBuildEvent>
+  </PropertyGroup>
+</Project>
