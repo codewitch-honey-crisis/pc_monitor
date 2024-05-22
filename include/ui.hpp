@@ -1,4 +1,5 @@
 #pragma once
+#include "lcd_config.h"
 #include "interface.hpp"
 #include "lcd_panel.hpp"
 #include "circular_buffer.hpp"
@@ -9,16 +10,20 @@ using color_t = gfx::color<typename screen_t::pixel_type>;
 using color32_t = gfx::color<gfx::rgba_pixel<32>>;
 
 using graph_buffer_t = circular_buffer<uint8_t,100>;
-
+#ifdef LCD_DMA
+constexpr const size_t lcd_transfer_buffer_size = 32*1024;
+#else
+constexpr const size_t lcd_transfer_buffer_size = 64*1024;
+#endif
 // define these in a CPP somewhere:
 // using lcd_panel.cpp
-#ifndef USE_SINGLE_BUFFER
+#ifdef LCD_DMA
 // use two 32KB buffers (DMA)
 extern uint8_t lcd_transfer_buffer1[];
 extern uint8_t lcd_transfer_buffer2[];
 #else
 extern uint8_t lcd_transfer_buffer1[];
-extern uint8_t* const lcd_transfer_buffer2;
+#define lcd_transfer_buffer2 nullptr
 #endif
 
 extern screen_t main_screen;

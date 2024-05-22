@@ -1,18 +1,15 @@
 #if __has_include(<Arduino.h>)
 #include <Arduino.h>
-#define I2C_INTERNAL Wire1
-#else
-#include <freertos/FreeRTOS.h>
-#include <freertos/task.h>
-#define I2C_INTERNAL I2C_NUM_1
 #endif
-#include <htcw_data.hpp>
+#include "lcd_config.h"
 #include "ui.hpp"
 #include "serial.hpp"
 #include "lcd_panel.hpp"
-#include <ft6336.hpp>
+#ifdef M5STACK_CORE2
 #include <m5core2_power.hpp>
+#endif
 #ifdef ARDUINO
+namespace arduino {} // shut compiler up
 using namespace arduino;
 #else
 using namespace esp_idf;
@@ -21,17 +18,16 @@ static uint32_t millis() {
 }
 void loop();
 #endif
-using namespace data;
-ft6336<320, 280> touch(I2C_INTERNAL);
+#ifdef M5STACK_CORE2
 static m5core2_power power;
-
+#endif
 // the screen/control definitions
-screen_t main_screen({320, 240},
-                     32*1024,
+screen_t main_screen({LCD_WIDTH, LCD_HEIGHT},
+                     lcd_transfer_buffer_size,
                      lcd_transfer_buffer1,
                      lcd_transfer_buffer2);
-screen_t disconnected_screen({320, 240},
-                     32*1024,
+screen_t disconnected_screen({LCD_WIDTH, LCD_HEIGHT},
+                     lcd_transfer_buffer_size,
                      lcd_transfer_buffer1,
                      lcd_transfer_buffer2);
 bool connected = false;
@@ -41,9 +37,11 @@ void setup() {
 #else
 extern "C" void app_main() {
 #endif
+#ifdef M5STACK_CORE2
     power.initialize();
     power.lcd_voltage(3);
-    lcd_panel_init();
+#endif
+    lcd_init();
     ui_init();
     lcd_active_screen(&disconnected_screen);
    

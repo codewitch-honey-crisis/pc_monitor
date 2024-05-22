@@ -8,7 +8,7 @@ using System.Runtime.InteropServices;
 using System.Drawing;
 using System.IO;
 using System.Runtime.Remoting.Messaging;
-
+using System.Globalization;
 namespace PCMonitor
 {
 	public partial class Main : Form
@@ -83,17 +83,16 @@ namespace PCMonitor
 			var sensor = FindSensor(entry.Path);
 			if (sensor == null)
 			{
-				return float.NaN;
+				return 0;
 			}
 			if (!sensor.Value.HasValue)
 			{
-				return float.NaN;
+				return 0;
 			}
 			return sensor.Value.GetValueOrDefault();
 		}
 		
-		Config[] _configs;
-		
+		List<Config> _configs = new List<Config>();
 		// local members for system info
 		float cpuUsage;
 		string cpuUsageId;
@@ -121,13 +120,21 @@ namespace PCMonitor
 			{
 				using(var reader = new StreamReader("pcmonitor.json"))
 				{
-					_configs = Config.ReadFrom(reader);
+					_configs.Clear();
+					_configs.AddRange(Config.ReadFrom(reader));
 				}
 				foreach(var cfg in _configs)
 				{
 					cfg.Port = new SerialPort(cfg.PortName, Baud);
 				}
 			}
+			MonitorList.Items.Clear();
+			foreach(var cfg in _configs)
+			{
+				MonitorList.Items.Add(cfg);
+			}
+			EditButton.Enabled = false;
+			DeleteButton.Enabled = false;
 		}
 		void _ClosePort(Config cfg)
 		{
@@ -136,7 +143,7 @@ namespace PCMonitor
 				if (cfg.Port.IsOpen)
 				{
 					cfg.Port.Close();
-					Log.AppendText("Closed " + cfg.PortName + Environment.NewLine);
+					// Log.AppendText("Closed " + cfg.PortName + Environment.NewLine);
 				}
 			}
 			catch { }
@@ -149,54 +156,6 @@ namespace PCMonitor
 			var ba = new byte[size];
 			Marshal.Copy(ptr,data, startIndex, size);
 			Marshal.FreeHGlobal(ptr);
-		}
-		private void UpdateTimer_Tick(object sender, EventArgs e)
-		{
-			// use OpenHardwareMonitorLib to collect the system info
-			var updateVisitor = new UpdateVisitor();
-			_computer.Accept(updateVisitor);
-			// go through all the ports
-			int i = 0;
-			if (_configs != null) {
-				foreach (var cfg in _configs)
-				{
-					SerialPort port = cfg.Port;
-					if (port != null)
-					{
-						if (!port.IsOpen)
-						{
-							port.Open();
-							Log.AppendText("Opened " + cfg.PortName + " (lazy open)"+Environment.NewLine);
-							port.DataReceived += Port_DataReceived;
-						}
-						ScreenPacket data = default;
-						int psize = Marshal.SizeOf(data);
-						var ba = new byte[2 + (psize * cfg.Entries.Count)];
-						ba[0] = 1;
-						ba[1] = (byte)cfg.Entries.Count;
-						int si = 2;
-						for (int j = 0; j < cfg.Entries.Count; ++j)
-						{
-							// put it in the struct for sending
-							ConfigEntry cfge = cfg.Entries[j];
-							data.Format = cfge.Format;
-							data.ValueMax = cfge.ValueMax;
-							data.Icon = cfge.IconData;
-							data.Colors = new ushort[2];
-							data.Colors[0] = cfge.ColorStartRgb565;
-							data.Colors[1] = cfge.ColorEndRgb565;
-							data.HsvColor = cfge.ColorHsv;
-							data.Value = GetSensorValue(cfge);
-							StructToBytes(data, ba, si);
-							si += psize;
-						}
-						port.Write(ba, 0, ba.Length);
-						port.BaseStream.Flush();
-					}
-					++i;
-				}
-			}
-			
 		}
 		void CollectSystemInfo()
 		{
@@ -301,16 +260,69 @@ namespace PCMonitor
 		public Main()
 		{
 			InitializeComponent();
-		
 			_computer.Open();
 			// we need paths
 			CollectSystemInfo();
 			Notify.Icon = System.Drawing.SystemIcons.Information;
 			Show();
 			RefreshConfig();
-			var tst = new EditEntry(_configs[0], _configs[0].Entries[0],_computer);
-			tst.Show();
 
+		}
+
+		private void UpdateTimer_Tick(object sender, EventArgs e)
+		{
+			
+			// use OpenHardwareMonitorLib to collect the system info
+			var updateVisitor = new UpdateVisitor();
+			_computer.Accept(updateVisitor);
+
+			// go through all the ports
+			int i = 0;
+			if (_configs != null)
+			{
+				foreach (var cfg in _configs)
+				{
+					SerialPort port = cfg.Port;
+					if (port != null)
+					{
+						try
+						{
+							if (!port.IsOpen)
+							{
+								port.Open();
+								// Not thread safe and don't want to block here:
+								//Log.AppendText("Opened " + cfg.PortName + " (lazy open)" + Environment.NewLine);
+								port.DataReceived += Port_DataReceived;
+							}
+							ScreenPacket data = default;
+							int psize = Marshal.SizeOf(data);
+							var ba = new byte[2 + (psize * cfg.Entries.Count)];
+							ba[0] = 1;
+							ba[1] = (byte)cfg.Entries.Count;
+							int si = 2;
+							for (int j = 0; j < cfg.Entries.Count; ++j)
+							{
+								// put it in the struct for sending
+								ConfigEntry cfge = cfg.Entries[j];
+								data.Format = cfge.Format;
+								data.ValueMax = cfge.ValueMax;
+								data.Icon = cfge.IconData;
+								data.Colors = new ushort[2];
+								data.Colors[0] = cfge.ColorStartRgb565;
+								data.Colors[1] = cfge.ColorEndRgb565;
+								data.HsvColor = cfge.ColorHsv;
+								data.Value = GetSensorValue(cfge);
+								StructToBytes(data, ba, si);
+								si += psize;
+							}
+							port.Write(ba, 0, ba.Length);
+							port.BaseStream.Flush();
+						}
+						catch { }
+					}
+					++i;
+				}
+			}
 		}
 
 		private void Port_DataReceived(object sender, SerialDataReceivedEventArgs e)
@@ -357,14 +369,91 @@ namespace PCMonitor
 			RefreshConfig();
 		}
 
-		private void NewButton_Click(object sender, EventArgs e)
-		{
 
+		private void MonitorList_SelectedIndexChanged(object sender, EventArgs e)
+		{
+			if(MonitorList.SelectedItems.Count > 0)
+			{
+				EditButton.Enabled = true;
+				DeleteButton.Enabled = true;
+			} else
+			{
+				EditButton.Enabled = false;
+				DeleteButton.Enabled = false;
+			}
 		}
 
-		private void DeleteButton_Click(object sender, EventArgs e)
+		private void EditButton_Click(object sender, EventArgs e)
 		{
-
+			if (MonitorList.SelectedItems.Count > 0)
+			{
+				var config = MonitorList.SelectedItems[0] as Config;
+				if(config!=null)
+				{
+					var mon = new EditMonitor(_configs, config, _computer);
+					if (mon.ShowDialog(this) == DialogResult.OK)
+					{
+						using (var writer = new StreamWriter("pcmonitor.json", false, Encoding.UTF8))
+						{
+							Config.WriteTo(_configs, writer);
+						}
+					}
+					RefreshConfig();
+				}
+			}
+			else
+			{
+				EditButton.Enabled = false;
+				DeleteButton.Enabled = false;
+			}
+		}
+		public int _ParseComPort(string port)
+		{
+			if (string.IsNullOrWhiteSpace(port)) return -1;
+			if (!port.ToLowerInvariant().StartsWith("com"))
+			{
+				return -1;
+			}
+			var num = port.Substring(3);
+			int i;
+			if (!int.TryParse(num, NumberStyles.Integer, CultureInfo.InvariantCulture.NumberFormat, out i))
+			{
+				return -1;
+			}
+			if (i < 1 || i > 255)
+			{
+				return -1;
+			}
+			return i;
+		}
+		private void NewButton_Click(object sender, EventArgs e)
+		{
+			Config config = new Config();
+			int max = 0;
+			foreach (Config cfg in MonitorList.Items)
+			{
+				var i = _ParseComPort(cfg.PortName);
+				if (i > max)
+				{
+					max = i;
+				}
+			}
+			if (max < 0)
+			{
+				max = 0;
+			}
+			++max;
+			config.PortName = "COM" + max.ToString();
+			_configs.Add(config);
+			var mon = new EditMonitor(_configs,config, _computer);
+			if(mon.ShowDialog(this) == DialogResult.OK)
+			{
+				using(var writer = new StreamWriter( "pcmonitor.json",false, Encoding.UTF8))
+				{
+					Config.WriteTo(_configs, writer);
+				}
+			}
+			RefreshConfig();
 		}
 	}
 }

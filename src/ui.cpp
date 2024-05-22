@@ -17,7 +17,14 @@ template <typename T>
 typename ui_remove_reference<T>::type&& ui_move(T&& arg) {
     return static_cast<typename ui_remove_reference<T>::type&&>(arg);
 }
-    
+#ifdef LCD_DMA
+// use two 32KB buffers (DMA)
+uint8_t lcd_transfer_buffer1[lcd_transfer_buffer_size];
+uint8_t lcd_transfer_buffer2[];
+#else
+uint8_t lcd_transfer_buffer1[lcd_transfer_buffer_size];
+#endif
+
 static canvas_t disconnected_ico(disconnected_screen);
 screen_entry_t* ui_screen_entries = nullptr;
 screen_entry::screen_entry(invalidation_tracker& parent) : value(parent), icon(parent), graph(parent), next(nullptr) {

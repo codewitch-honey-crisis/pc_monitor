@@ -45,7 +45,7 @@ namespace PCMonitor
 				} else
 				{
 					var sens = tag as ISensor;
-					if(sens==null)
+					if(sens==null || !sens.Value.HasValue)
 					{
 						valid = false;
 					}
@@ -212,7 +212,7 @@ namespace PCMonitor
 		{
 			var tag = e.Node.Tag;
 			var sens = tag as ISensor;
-			if (sens != null)
+			if (sens != null && sens.Value.HasValue)
 			{
 				PathLabel.Text = sens.Identifier.ToString();
 				_entry.Path = PathLabel.Text;

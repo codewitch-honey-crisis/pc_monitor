@@ -30,19 +30,16 @@ namespace PCMonitor
 		private void InitializeComponent()
 		{
 			this.components = new System.ComponentModel.Container();
-			this.UpdateTimer = new System.Windows.Forms.Timer(this.components);
 			this.Notify = new System.Windows.Forms.NotifyIcon(this.components);
 			this.StartedCheckBox = new System.Windows.Forms.CheckBox();
 			this.Log = new System.Windows.Forms.TextBox();
 			this.RefreshButton = new System.Windows.Forms.Button();
-			this.PortBox = new System.Windows.Forms.ListBox();
+			this.MonitorList = new System.Windows.Forms.ListBox();
+			this.EditButton = new System.Windows.Forms.Button();
 			this.NewButton = new System.Windows.Forms.Button();
 			this.DeleteButton = new System.Windows.Forms.Button();
+			this.UpdateTimer = new System.Windows.Forms.Timer(this.components);
 			this.SuspendLayout();
-			// 
-			// UpdateTimer
-			// 
-			this.UpdateTimer.Tick += new System.EventHandler(this.UpdateTimer_Tick);
 			// 
 			// Notify
 			// 
@@ -86,21 +83,33 @@ namespace PCMonitor
 			this.RefreshButton.UseVisualStyleBackColor = true;
 			this.RefreshButton.Click += new System.EventHandler(this.RefreshButton_Click);
 			// 
-			// PortBox
+			// MonitorList
 			// 
-			this.PortBox.FormattingEnabled = true;
-			this.PortBox.ItemHeight = 16;
-			this.PortBox.Location = new System.Drawing.Point(12, 33);
-			this.PortBox.Name = "PortBox";
-			this.PortBox.Size = new System.Drawing.Size(114, 212);
-			this.PortBox.TabIndex = 18;
+			this.MonitorList.FormattingEnabled = true;
+			this.MonitorList.ItemHeight = 16;
+			this.MonitorList.Location = new System.Drawing.Point(12, 33);
+			this.MonitorList.Name = "MonitorList";
+			this.MonitorList.Size = new System.Drawing.Size(114, 212);
+			this.MonitorList.TabIndex = 18;
+			this.MonitorList.SelectedIndexChanged += new System.EventHandler(this.MonitorList_SelectedIndexChanged);
+			// 
+			// EditButton
+			// 
+			this.EditButton.Enabled = false;
+			this.EditButton.Location = new System.Drawing.Point(133, 33);
+			this.EditButton.Name = "EditButton";
+			this.EditButton.Size = new System.Drawing.Size(75, 23);
+			this.EditButton.TabIndex = 19;
+			this.EditButton.Text = "&Edit...";
+			this.EditButton.UseVisualStyleBackColor = true;
+			this.EditButton.Click += new System.EventHandler(this.EditButton_Click);
 			// 
 			// NewButton
 			// 
-			this.NewButton.Location = new System.Drawing.Point(133, 33);
+			this.NewButton.Location = new System.Drawing.Point(133, 63);
 			this.NewButton.Name = "NewButton";
 			this.NewButton.Size = new System.Drawing.Size(75, 23);
-			this.NewButton.TabIndex = 19;
+			this.NewButton.TabIndex = 20;
 			this.NewButton.Text = "&New...";
 			this.NewButton.UseVisualStyleBackColor = true;
 			this.NewButton.Click += new System.EventHandler(this.NewButton_Click);
@@ -108,13 +117,16 @@ namespace PCMonitor
 			// DeleteButton
 			// 
 			this.DeleteButton.Enabled = false;
-			this.DeleteButton.Location = new System.Drawing.Point(133, 63);
+			this.DeleteButton.Location = new System.Drawing.Point(133, 92);
 			this.DeleteButton.Name = "DeleteButton";
 			this.DeleteButton.Size = new System.Drawing.Size(75, 23);
-			this.DeleteButton.TabIndex = 20;
+			this.DeleteButton.TabIndex = 21;
 			this.DeleteButton.Text = "Delete";
 			this.DeleteButton.UseVisualStyleBackColor = true;
-			this.DeleteButton.Click += new System.EventHandler(this.DeleteButton_Click);
+			// 
+			// UpdateTimer
+			// 
+			this.UpdateTimer.Tick += new System.EventHandler(this.UpdateTimer_Tick);
 			// 
 			// Main
 			// 
@@ -123,7 +135,8 @@ namespace PCMonitor
 			this.ClientSize = new System.Drawing.Size(566, 260);
 			this.Controls.Add(this.DeleteButton);
 			this.Controls.Add(this.NewButton);
-			this.Controls.Add(this.PortBox);
+			this.Controls.Add(this.EditButton);
+			this.Controls.Add(this.MonitorList);
 			this.Controls.Add(this.RefreshButton);
 			this.Controls.Add(this.Log);
 			this.Controls.Add(this.StartedCheckBox);
@@ -138,14 +151,15 @@ namespace PCMonitor
 		}
 
 		#endregion
-		private System.Windows.Forms.Timer UpdateTimer;
 		private System.Windows.Forms.NotifyIcon Notify;
 		private System.Windows.Forms.CheckBox StartedCheckBox;
 		private System.Windows.Forms.TextBox Log;
 		private System.Windows.Forms.Button RefreshButton;
-		private System.Windows.Forms.ListBox PortBox;
+		private System.Windows.Forms.ListBox MonitorList;
+		private System.Windows.Forms.Button EditButton;
 		private System.Windows.Forms.Button NewButton;
 		private System.Windows.Forms.Button DeleteButton;
+		private System.Windows.Forms.Timer UpdateTimer;
 	}
 }
 
