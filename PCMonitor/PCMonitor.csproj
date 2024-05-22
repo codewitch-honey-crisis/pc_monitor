@@ -50,13 +50,19 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="HsvColor.cs" />
-    <Compile Include="Config.cs" />
-    <Compile Include="EditLabel.cs">
+    <Compile Include="EditMonitor.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="EditLabel.Designer.cs">
-      <DependentUpon>EditLabel.cs</DependentUpon>
+    <Compile Include="EditMonitor.Designer.cs">
+      <DependentUpon>EditMonitor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="HsvColor.cs" />
+    <Compile Include="Config.cs" />
+    <Compile Include="EditEntry.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="EditEntry.Designer.cs">
+      <DependentUpon>EditEntry.cs</DependentUpon>
     </Compile>
     <Compile Include="IconContainer.cs" />
     <Compile Include="JsonElement.cs" />
@@ -74,8 +80,17 @@
     <Compile Include="Interface.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <EmbeddedResource Include="EditLabel.resx">
-      <DependentUpon>EditLabel.cs</DependentUpon>
+    <Compile Include="GradientBox.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="GradientBox.Designer.cs">
+      <DependentUpon>GradientBox.cs</DependentUpon>
+    </Compile>
+    <EmbeddedResource Include="EditEntry.resx">
+      <DependentUpon>EditEntry.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="EditMonitor.resx">
+      <DependentUpon>EditMonitor.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Main.resx">
       <DependentUpon>Main.cs</DependentUpon>

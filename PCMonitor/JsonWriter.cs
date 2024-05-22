@@ -16,10 +16,10 @@ namespace PCMonitor
 				writer.Write("\"");
 				writer.Write(JsonUtility.EscapeString((string)value));
 				writer.Write("\"");
-			}
-			else if (value is double)
+			} 
+			else if (value is double || value is float || value is int || value is long || value is Decimal)
 			{
-				writer.Write(((double)value).ToString("r"));
+				writer.Write(Convert.ToDouble(value).ToString("r"));
 			}
 			else if (value is bool)
 			{

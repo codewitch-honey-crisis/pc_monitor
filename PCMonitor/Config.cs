@@ -4,16 +4,21 @@ using System.Drawing;
 using System.IO;
 using System.Globalization;
 using System.IO.Ports;
+using System.Runtime.InteropServices.WindowsRuntime;
+using System.Configuration;
 
 namespace PCMonitor
 {
-	internal class ConfigEntry
+	internal class ConfigEntry : ICloneable
 	{
 		Image _icon;
 		byte[] _iconData = null;
 		public string Path { get; set; }
 		public string Format { get; set; }
 		public float ValueMax { get; set; }
+		public Color ColorStart { get; set; }
+		public Color ColorEnd { get; set; }
+		public bool ColorHsv { get; set; }
 		public Image Icon {
 			get {
 				return _icon;
@@ -62,6 +67,27 @@ namespace PCMonitor
 				_icon = bmp;
 			}
 		}
+		object ICloneable.Clone() { return Clone(); }
+		public ConfigEntry Clone()
+		{
+			var result = new ConfigEntry();
+			result.Path = Path;
+			result.Format = Format;
+			result.ValueMax = ValueMax;
+			result.ColorStart = ColorStart;
+			result.ColorEnd = ColorEnd;
+			result.ColorHsv = ColorHsv;
+			if (_icon != null)
+			{
+				result._icon = (Image)_icon.Clone();
+			}
+			if (_iconData != null)
+			{
+				result._iconData = new byte[_iconData.Length];
+				Array.Copy(_iconData, result._iconData, _iconData.Length);
+			}
+			return result;
+		}
 		private byte[] _GetIconData()
 		{
 			if (Icon == null) return new byte[16*16*2];
@@ -106,9 +132,14 @@ namespace PCMonitor
 				return _ColorToRgb565(ColorEnd);
 			}
 		}
-		public Color ColorStart { get; set; }
-		public Color ColorEnd { get; set; }
-		public bool ColorHsv { get; set; }		
+		public override string ToString()
+		{
+			if(string.IsNullOrEmpty(Path))
+			{
+				return base.ToString();
+			}
+			return Path.ToString();
+		}
 	}
 	internal class Config
 	{
@@ -220,7 +251,7 @@ namespace PCMonitor
 					{
 						return Color.Transparent;
 					}
-					return HsvColor.Hsv(h, s / 100.0, v / 100.0);
+					return new HsvColor((uint)h, (byte)s , (byte)v ).ToColor();
 				}
 			}
             else if (color.StartsWith("rgb(") && color.EndsWith(")"))
@@ -289,6 +320,40 @@ namespace PCMonitor
 				result.Add(cfg);
 			}
 			return result.ToArray();
+		}
+		public static void WriteTo(IEnumerable<Config> configs, TextWriter writer)
+		{
+			if(configs == null) { throw new ArgumentNullException(nameof(configs)); }
+			dynamic doc = new JsonObject();
+			doc.monitors = new JsonArray();
+			foreach (var config in configs)
+			{
+				dynamic monitor = new JsonObject();
+				monitor.port = config.PortName;
+				monitor.entries = new JsonArray();
+				foreach(var entry in config.Entries)
+				{
+					dynamic monitor_entry = new JsonObject();
+					monitor_entry.icon = string.Concat("base64(", Convert.ToBase64String(entry.IconData), ")");
+					monitor_entry.value = entry.Path;
+					monitor_entry.value_max = entry.ValueMax;
+					monitor_entry.format = entry.Format;
+					monitor_entry.color_hsv = entry.ColorHsv;
+					monitor_entry.color_start = string.Format("rgb({0},{1},{2})",entry.ColorStart.R,entry.ColorStart.G,entry.ColorStart.B);
+					monitor_entry.color_end = string.Format("rgb({0},{1},{2})", entry.ColorEnd.R, entry.ColorEnd.G, entry.ColorEnd.B);
+					monitor.entries.Add(monitor_entry);
+				}
+				doc.monitors.Add(monitor);
+			}
+			((JsonObject)doc).WriteTo(writer); writer.Flush();
+		}
+		public override string ToString()
+		{
+			if(_portName==null && _port==null)
+			{
+				return base.ToString();
+			}
+			return PortName;
 		}
 	}
 }

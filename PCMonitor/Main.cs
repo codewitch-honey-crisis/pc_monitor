@@ -107,8 +107,11 @@ namespace PCMonitor
 		bool isNvidia;
 		private readonly Computer _computer = new Computer
 		{
+			MainboardEnabled = true,
+			FanControllerEnabled = true,
 			CPUEnabled = true,
-			GPUEnabled = true
+			GPUEnabled = true,
+			RAMEnabled = true
 		};
 		// Populates the PortBox control with COM ports
 		void RefreshConfig()
@@ -298,12 +301,16 @@ namespace PCMonitor
 		public Main()
 		{
 			InitializeComponent();
+		
 			_computer.Open();
 			// we need paths
 			CollectSystemInfo();
 			Notify.Icon = System.Drawing.SystemIcons.Information;
 			Show();
 			RefreshConfig();
+			var tst = new EditEntry(_configs[0], _configs[0].Entries[0],_computer);
+			tst.Show();
+
 		}
 
 		private void Port_DataReceived(object sender, SerialDataReceivedEventArgs e)
@@ -348,6 +355,16 @@ namespace PCMonitor
 		private void RefreshButton_Click(object sender, EventArgs e)
 		{
 			RefreshConfig();
+		}
+
+		private void NewButton_Click(object sender, EventArgs e)
+		{
+
+		}
+
+		private void DeleteButton_Click(object sender, EventArgs e)
+		{
+
 		}
 	}
 }
