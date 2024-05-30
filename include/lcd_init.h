@@ -902,7 +902,7 @@ bool lcd_panel_init() {
     lcd_ctrl1.lcd_ha_width = active_width - 1;
     lcd_ctrl1.lcd_ht_width = hsw + hbp + active_width + hfp - 1;
     dev->lcd_ctrl1.val = lcd_ctrl1.val;
-
+    
     typeof(dev->lcd_ctrl2) lcd_ctrl2;
     lcd_ctrl2.val = 0;
     lcd_ctrl2.lcd_vsync_width = vsw - 1;
@@ -1093,6 +1093,7 @@ bool lcd_panel_init() {
     panel_config.timings.vsync_back_porch = LCD_VSYNC_BACK_PORCH;
     panel_config.timings.vsync_front_porch = LCD_VSYNC_FRONT_PORCH;
     panel_config.timings.vsync_pulse_width = LCD_VSYNC_PULSE_WIDTH;
+    
     // TODO: test the following
     panel_config.timings.flags.pclk_active_neg = true;
     panel_config.timings.flags.de_idle_high = LCD_DE_IDLE_HIGH;

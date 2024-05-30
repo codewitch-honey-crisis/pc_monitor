@@ -3,11 +3,8 @@
 // to exactly one CPP file before including this file
 #pragma once
 #include <stdint.h>
-#include <gfx.hpp>
 
 extern const uint8_t OpenSans_Regular_data[];
-extern gfx::const_buffer_stream OpenSans_Regular_stream;
-extern const gfx::open_font OpenSans_Regular;
 
 #ifdef OPENSANS_REGULAR_IMPLEMENTATION
 
@@ -13599,6 +13596,4 @@ const uint8_t OpenSans_Regular_data[] = {
 	0xad,0xb0,0x95,0xb4,0x68,0x58,0xc3,0xe2,0xd7,0x29,0xff,0x91,0xa4,0xc7,0x00,0x00
 };
 
-gfx::const_buffer_stream OpenSans_Regular_stream(OpenSans_Regular_data, sizeof(OpenSans_Regular_data));
-const gfx::open_font OpenSans_Regular(&OpenSans_Regular_stream);
 #endif
